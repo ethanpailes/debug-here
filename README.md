@@ -58,3 +58,33 @@ kind of person, this crate probably isn't for you. Personally, I've never
 used a visual gdb wrapper that I was able to fully trust. I've even had
 enough bad experiences with TUI mode that I now prefer just the plain old
 command line interface.
+
+## Usage
+
+First, you need the `debug-here` gdb wrapper installed. `xterm` does not
+let you pass extra arguments to the program you invoke as your shell, so
+`debug-here-gdb-wrapper` will arrange for `rust-gdb` to execute all the
+right gdb commands.
+
+```
+cargo install debug-here-gdb-wrapper
+```
+
+Now you can add debug-here to the dependencies of a crate you want to
+work on.
+
+```
+debug-here = "0.1"
+```
+
+Drop the usual `extern crate debug_here;` somewhere in your
+`lib.rs` or `main.rs`, then place `#[macro_use] debug_here;`
+in the module you want to debug and just write `debug_here!()`
+wherever you want to get dropped into the debugger. When your
+program reaches that point for the first time, it will launch
+an `xterm` window with `rust-gdb` attached to your process
+right after the `debug_here!()` macro. You can poke around
+and start stepping through your program. If you reach another
+`debug_here!()` macro invocation, you don't have to worry about
+more gdb terminals spawing left and right. `debug_here!()` only
+fires once per program.
