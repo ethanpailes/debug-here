@@ -1,0 +1,8 @@
+[package]
+name = "debug-me"
+version = "0.1.0"
+authors = ["Ethan Pailes <ethanpailes@gmail.com>"]
+workspace = ".."
+
+[dependencies]
+debug-here = { version = "0.1", path = ".." }

@@ -1,0 +1,15 @@
+[package]
+name = "debug-here"
+version = "0.1.0"
+authors = ["Ethan Pailes <ethanpailes@gmail.com>"]
+
+[workspace]
+members = [
+    "debug-me",
+    "debug-here-gdb-wrapper",
+]
+
+[dependencies]
+lazy_static = "1.1.0"
+nix = "0.11.0"
+which = "2.0"
