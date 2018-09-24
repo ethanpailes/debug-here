@@ -88,3 +88,11 @@ and start stepping through your program. If you reach another
 `debug_here!()` macro invocation, you don't have to worry about
 more gdb terminals spawing left and right. `debug_here!()` only
 fires once per program.
+
+## Platforms
+
+Right now debug-here only works on linux with rust-gdb. There might
+be support for macOS and rust-lldb in the future. Windows support
+is a bit less likely because I don't understand the moving pieces
+as well, but that could change.
+
