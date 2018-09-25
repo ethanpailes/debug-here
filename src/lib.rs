@@ -6,6 +6,9 @@ use std::sync::Mutex;
 use std::{fs, process, env};
 use nix::unistd;
 
+/// The debug here macro. Just invoke this macro somewhere in your
+/// source, and when your program reaches it a terminal running
+/// `rust-gdb` will launch.
 #[macro_export]
 macro_rules! debug_here {
     () => {
