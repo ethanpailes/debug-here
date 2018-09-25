@@ -2,6 +2,14 @@
 name = "debug-here"
 version = "0.1.0"
 authors = ["Ethan Pailes <ethanpailes@gmail.com>"]
+readme = "README.md"
+license = "MIT/Apache-2.0"
+repository = "https://github.com/ethanpailes/debug-here"
+documentation = "https://docs.rs/debug-here-gdb-wrapper"
+homepage = "https://github.com/ethanpailes/debug-here"
+description = """
+A macro to shave precious seconds off the time it takes to start debugging.
+"""
 
 [workspace]
 members = [

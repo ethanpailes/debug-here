@@ -3,5 +3,14 @@ name = "debug-here-gdb-wrapper"
 version = "0.1.0"
 authors = ["Ethan Pailes <ethanpailes@gmail.com>"]
 workspace = ".."
+readme = "README.md"
+license = "MIT/Apache-2.0"
+repository = "https://github.com/ethanpailes/debug-here"
+documentation = "https://docs.rs/debug-here-gdb-wrapper"
+homepage = "https://github.com/ethanpailes/debug-here"
+description = """
+A shim to help debug-here launch debuggers.
+"""
+categories = ["development-tools::debugging"]
 
 [dependencies]
