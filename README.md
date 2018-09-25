@@ -89,6 +89,133 @@ and start stepping through your program. If you reach another
 more gdb terminals spawing left and right. `debug_here!()` only
 fires once per program.
 
+## An Example: Bad Factorials
+
+I have a very important rust program called `debug-me` which computes
+the factorial of 5. Or at least its supposed to. Right now it is
+telling me that the factorial of 5 is 0, which doesn't seem right.
+Here is my `main.rs`.
+
+```rust
+fn factorial(n: usize) -> usize {
+    let mut res = 1;
+    for i in 0..n {
+        res *= i;
+    }
+    res
+}
+
+fn main() {
+    println!("The factorial of 5 is {}!", factorial(5));
+}
+```
+
+You can probably see the problem, but I can't because I'm helpless without
+a debugger. In order to figure out what is going on, I'm going to pull
+in debug-here to help me out. First, I'll make sure that the debug-here
+gdb shim is installed with `cargo install debug-here-gdb-wrapper`.
+Now, I'll add debug-here to my factorial crate's `Cargo.toml`.
+
+```
+[dependencies]
+debug-here = "0.1"
+```
+
+And I'll add the line
+
+```
+#[macro_use] extern crate debug_here;
+```
+
+to my source file. Now it looks like this:
+
+```rust
+#[macro_use] extern crate debug_here;
+
+fn factorial(n: usize) -> usize {
+    let mut res = 1;
+    for i in 0..n {
+        res *= i;
+    }
+    res
+}
+
+fn main() {
+    println!("The factorial of 5 is {}!", factorial(5));
+}
+```
+
+My loop is definitely counting up and multiplying the result variable
+by bigger and bigger numbers. I feel like it should work, but I'm
+going to step through the loop a few times to see what's going on.
+Time to set my breakpoint with debug-here.
+
+```rust
+#[macro_use] extern crate debug_here;
+
+fn factorial(n: usize) -> usize {
+    let mut res = 1;
+    debug_here!();
+    for i in 0..n {
+        res *= i;
+    }
+    res
+}
+
+fn main() {
+    println!("The factorial of 5 is {}!", factorial(5));
+}
+```
+
+As easy as `println!`! Now I run my program with `cargo run`.
+An xterm window pops up with a gdb shell that says:
+
+```
+debug_me::factorial (n=5) at debug-me/src/main.rs:6
+6           for i in 0..n {
+(gdb)
+```
+
+Looking at my source code, it seems like `res` is an interesting
+variable to keep track of, so I'll ask gdb to keep me informed.
+
+```
+(gdb) disp res
+1: res = 1
+```
+
+Now, I'll step through the loop a few times.
+
+```
+(gdb) n
+7               res *= i;
+1: res = 1
+(gdb) n
+6           for i in 0..n {
+1: res = 0
+(gdb) n
+7               res *= i;
+1: res = 0
+```
+
+It looks like `res` went to 0 in the first loop iteration. Looking back
+at the source, I can see that this is because the counter starts at 0. I'll
+quit out of the debugger and fix it.
+
+If you want to play with this example yourself, you can just clone the
+repo at `https://github.com/ethanpailes/debug-here` and run the following
+commands:
+
+```
+ > cargo install debug-here-gdb-wrapper # if you haven't already done so
+ > cd debug-here/debug-me
+ > cargo run
+```
+
+You should see an xterm pop up with a rust-gdb shell ready to go. There
+is another bug in the factorial routine. Try debugging it with
+rust-gdb.
+
 ## Platforms
 
 Right now debug-here only works on linux with rust-gdb. There might
