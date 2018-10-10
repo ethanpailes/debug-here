@@ -12,7 +12,7 @@ use nix::unistd;
 #[macro_export]
 macro_rules! debug_here {
     () => {
-        debug_here::debug_here_impl();
+        ::debug_here::debug_here_impl();
     }
 }
 
