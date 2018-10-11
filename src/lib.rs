@@ -51,8 +51,9 @@ pub fn debug_here_impl() {
         eprintln!(r#"debug-here:
             ptrace_scope must be set to 0 for debug-here to work.
             This will allow any process with a given uid to rummage around
-            in the memory of any other process, so there are some security
-            risks. To set ptrace_scope for just this session you can do:
+            in the memory of any other process with the same uid, so there
+            are some security risks. To set ptrace_scope for just this
+            session you can do:
 
             echo 0 | sudo tee /proc/sys/kernel/yama/ptrace_scope
 
