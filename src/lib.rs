@@ -86,17 +86,29 @@ pub fn debug_here_impl() {
     env::set_var("RUST_DEBUG_HERE_LIFELINE",
         format!("1,{}", unistd::getpid()));
 
-    // TODO(ethan): add support for alacritty and possibly other
-    //              terminal emulators.
-    let term = "xterm";
-    if process::Command::new(term)
-            .arg("debug-here-gdb-wrapper")
-            .stdin(process::Stdio::null())
-            .stdout(process::Stdio::null())
-            .stderr(process::Stdio::null())
-            .spawn()
-            .is_err() {
-        eprintln!("debug-here: Failed to launch rust-gdb in {}.", term);
+    let term = match which::which("alacritty").or(which::which("xterm")) {
+        Ok(t) => t,
+        Err(_) => {
+            eprintln!(r#"debug-here:
+                Can't find alacritty or xterm on your path. Those are the
+                only terminal emulators currently supported.
+                "#);
+            return;
+        }
+    };
+    let term_cmd = term.clone();
+
+    let mut cmd = process::Command::new(term_cmd);
+    cmd.stdin(process::Stdio::null())
+       .stdout(process::Stdio::null())
+       .stderr(process::Stdio::null());
+    if term.ends_with("alacritty") {
+        cmd.arg("-e");
+    }
+    cmd.arg("debug-here-gdb-wrapper");
+
+    if cmd.spawn().is_err() {
+        eprintln!("debug-here: Failed to launch rust-gdb in {:?}.", term);
         return;
     }
 
