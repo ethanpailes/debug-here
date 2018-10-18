@@ -69,7 +69,7 @@ pub fn debug_here_impl() {
 
     if which::which("debug-here-gdb-wrapper").is_err() {
         eprintln!(r#"debug-here:
-            can't find debug-here-gdb-wrapper on your path. To get it
+            Can't find debug-here-gdb-wrapper on your path. To get it
             you can run `cargo install debug-here-gdb-wrapper`
             "#);
         return;
