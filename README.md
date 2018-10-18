@@ -61,10 +61,10 @@ command line interface.
 
 ## Usage
 
-First, you need the `debug-here` gdb wrapper installed. `xterm` does not
-let you pass extra arguments to the program you invoke as your shell, so
-`debug-here-gdb-wrapper` will arrange for `rust-gdb` to execute all the
-right gdb commands.
+First, you need the `debug-here` gdb wrapper installed. Not all terminal
+emulators allow you to pass extra arguments to the program you invoke as
+your shell, so `debug-here-gdb-wrapper` will arrange for `rust-gdb` to
+execute all the right gdb commands.
 
 ```
 cargo install debug-here-gdb-wrapper
@@ -82,7 +82,7 @@ Drop the usual `extern crate debug_here;` somewhere in your
 in the module you want to debug and just write `debug_here!()`
 wherever you want to get dropped into the debugger. When your
 program reaches that point for the first time, it will launch
-an `xterm` window with `rust-gdb` attached to your process
+a terminal window with `rust-gdb` attached to your process
 right after the `debug_here!()` macro. You can poke around
 and start stepping through your program. If you reach another
 `debug_here!()` macro invocation, you don't have to worry about
@@ -168,7 +168,7 @@ fn main() {
 ```
 
 As easy as `println!`! Now I run my program with `cargo run`.
-An xterm window pops up with a gdb shell that says:
+An terminal window pops up with a gdb shell that says:
 
 ```
 debug_me::factorial (n=5) at debug-me/src/main.rs:6
@@ -212,9 +212,17 @@ commands:
  > cargo run
 ```
 
-You should see an xterm pop up with a rust-gdb shell ready to go. There
+You should see a terminal pop up with a rust-gdb shell ready to go. There
 is another bug in the factorial routine. Try debugging it with
 rust-gdb.
+
+## Supported Terminal Emulators
+
+Currently debug-here supports `alacritty` and `xterm`. If you have
+alacritty on your path, it will use that, on the theory that you would
+rather use a less standard terminal emulator if you went to all the trouble
+of installing it. If you don't have `alacritty` on your path, it will
+fall back on `xterm`.
 
 ## Platforms
 
