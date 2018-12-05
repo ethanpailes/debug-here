@@ -1,6 +1,6 @@
 # debug-here-gdb-wrapper
 
-This is program is what debug-here tells new terminals to use as a shell.
+This program is what debug-here tells new terminals to use as a shell.
 It is very simple. All it does is examine the `RUST_DEBUG_HERE_LIFELINE`
 environment variable, then becomes `rust-gdb` via exec and hooks into
 the part of the source code that called the `debug_here!()` macro.
