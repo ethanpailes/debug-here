@@ -77,9 +77,8 @@ work on.
 debug-here = "0.1"
 ```
 
-Drop the usual `extern crate debug_here;` somewhere in your
-`lib.rs` or `main.rs`, then place `#[macro_use] debug_here;`
-in the module you want to debug and just write `debug_here!()`
+Drop the usual `#[macro_use] extern crate debug_here;` somewhere in your
+`lib.rs` or `main.rs`, then just write `debug_here!()`
 wherever you want to get dropped into the debugger. When your
 program reaches that point for the first time, it will launch
 a terminal window with `rust-gdb` attached to your process
