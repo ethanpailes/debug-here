@@ -12,11 +12,8 @@ wrote, or even that you wrote. Once you've got your executable
 name you have to start it with `rust-gdb exe` (if you use a wrapper
 script, you have to arrange for your script to do so). Now that
 you've started your program under gdb you have to set your break
-point. `b filename.rs:lineno` works if the code has been statically
-linked (fortunately it usually has in rust), but you might have to
-first do `b main; run; b filename.rs:lineno; c` instead. Now you
-are ready to debug. It's not that much work, but I find myself
-doing it a fair amount, so it can get annoying.
+point. It's not that much work, but I find myself doing it a fair
+amount, so it can get annoying.
 
 One alternative is to arrange for your program to enter some sort
 of sleep or looping state, rummage around for the PID on the command
@@ -25,50 +22,28 @@ more work (again, not much work, but enough to be annoying), so people
 only do it if it is not convenient to launch the program in question
 from the terminal.
 
-### Isn't Python Slick?
-
-Python is my goto scripting language, and by far my favorite thing
-about the language is `pdb`, the debugger that lives in its standard
-library. My development workflow for python involves writing the
-script up to the point where I no longer know the APIs that I need
-to use, then dropping a `pdb.set_trace()` call into my code and
-running it. Python automatically drops me into a full REPL with all
-the program state to that point just lying around. I poke around for
-a bit, then write the next chunk of code. You might call this debugger
-driven development. When I'm debugging python I do something similar
-by inserting `pdb.set_trace()` directly into my code wherever something
-seems interesting. It's the single most ergonomic language or ecosystem
-feature that I've ever used.
-
 ### Making getting to the debugger easier in rust
 
-`rust-gdb` isn't yet powerful enough to support the sort of debugger
-driven development that I love to use in Python, but it's not that
-hard to reduce the amount of effort required to enter a debugger.
-This crate just automates the process of convincing your program to
+This crate automates the process of convincing your program to
 wait around for a debugger to attach to it. Entering the debugger should
 be just as easy as writing a `println!` statement. This crate makes it
 so.
 
-### What about visual debuggers?
-
-Some people love visual debuggers, and if you are one of them thats great!
-`Right click > Add breakpoint` is pretty fast. If you are a visual debugger
-kind of person, this crate probably isn't for you. Personally, I've never
-used a visual gdb wrapper that I was able to fully trust. I've even had
-enough bad experiences with TUI mode that I now prefer just the plain old
-command line interface.
-
 ## Usage
 
-First, you need the `debug-here` gdb wrapper installed. Not all terminal
-emulators allow you to pass extra arguments to the program you invoke as
-your shell, so `debug-here-gdb-wrapper` will arrange for `rust-gdb` to
-execute all the right gdb commands.
+### Linux Specific Setup
+
+If you are using linux, you need to install the debugger wrapper
+(which is called `debug-here-gdb-wrapper` for historical reasons).
+Not all terminal emulators allow you to pass extra arguments to the
+program you invoke as your shell, so `debug-here-gdb-wrapper` will
+arrange for your debugger backend to execute all the right commands.
 
 ```
 cargo install debug-here-gdb-wrapper
 ```
+
+# General Setup
 
 Now you can add debug-here to the dependencies of a crate you want to
 work on.
@@ -81,12 +56,30 @@ Drop the usual `#[macro_use] extern crate debug_here;` somewhere in your
 `lib.rs` or `main.rs`, then just write `debug_here!()`
 wherever you want to get dropped into the debugger. When your
 program reaches that point for the first time, it will launch
-a terminal window with `rust-gdb` attached to your process
-right after the `debug_here!()` macro. You can poke around
+a terminal window with `rust-gdb` or `rust-lldb` attached to your process
+right after the `debug_here!()` macro. The exact debugger used by default
+depends on your platform, but you can write `debug_here!(gdb)` or
+`debug_here!(lldb)` to force a particular backend. You can poke around
 and start stepping through your program. If you reach another
 `debug_here!()` macro invocation, you don't have to worry about
-more gdb terminals spawing left and right. `debug_here!()` only
+more debugger terminals spawning left and right. `debug_here!()` only
 fires once per program.
+
+## Supported Terminal Emulators
+
+Currently debug-here supports `alacritty` and `xterm` on linux, and
+`Terminal.app` on macos. If you have alacritty on your path, it will use that,
+on the theory that you would rather use a less standard terminal emulator
+if you went to all the trouble of installing it. If you don't have
+`alacritty` on your path, it will fall back on `xterm`.
+
+## Platforms
+
+Right now `debug-here` only works on linux and macos. There may be support
+for Windows in the future. `debug-here` defaults to using `rust-gdb` on linux
+and `rust-lldb` on macos. The primary reason for defaulting to `rust-lldb`
+on macos is to avoid the pain of getting a properly code-signed gdb.
+debug-here aims to make getting into the debugger as painless as possible.
 
 ## An Example: Bad Factorials
 
@@ -112,7 +105,7 @@ fn main() {
 You can probably see the problem, but I can't because I'm helpless without
 a debugger. In order to figure out what is going on, I'm going to pull
 in debug-here to help me out. First, I'll make sure that the debug-here
-gdb shim is installed with `cargo install debug-here-gdb-wrapper`.
+debugger shim is installed with `cargo install debug-here-gdb-wrapper`.
 Now, I'll add debug-here to my factorial crate's `Cargo.toml`.
 
 ```
@@ -206,7 +199,7 @@ repo at `https://github.com/ethanpailes/debug-here` and run the following
 commands:
 
 ```
- > cargo install debug-here-gdb-wrapper # if you haven't already done so
+ > cargo install debug-here-gdb-wrapper # if you are on linux
  > cd debug-here/debug-me
  > cargo run
 ```
@@ -214,19 +207,3 @@ commands:
 You should see a terminal pop up with a rust-gdb shell ready to go. There
 is another bug in the factorial routine. Try debugging it with
 rust-gdb.
-
-## Supported Terminal Emulators
-
-Currently debug-here supports `alacritty` and `xterm`. If you have
-alacritty on your path, it will use that, on the theory that you would
-rather use a less standard terminal emulator if you went to all the trouble
-of installing it. If you don't have `alacritty` on your path, it will
-fall back on `xterm`.
-
-## Platforms
-
-Right now debug-here only works on linux with rust-gdb. There might
-be support for macOS and rust-lldb in the future. Windows support
-is a bit less likely because I don't understand the moving pieces
-as well, but that could change.
-
