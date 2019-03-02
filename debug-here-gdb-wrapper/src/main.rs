@@ -39,12 +39,7 @@ fn inner() -> Result<(), String> {
             .and_then(|v| v.parse::<usize>().map_err(|e| e.to_string()))
             .map_err(|e| format!("Failed to parse version number: {}", e))?;
 
-    let pid = params
-            .next()
-            .ok_or("Failed to get the PID of the program to be debugged."
-                   .to_string())?;
-
-    if fmt_version_no > 1 {
+    if fmt_version_no > 2 {
         return Err(
             format!("Don't know what to do with this debug-here protocol
                      version ({}). You might want to re-install
@@ -52,12 +47,36 @@ fn inner() -> Result<(), String> {
                 fmt_version_no));
     }
 
-    // Hopefully, this won't return, but if it does we want to display
-    // the error.
-    Err(process::Command::new("rust-gdb")
-            .arg("-pid").arg(&pid)
-            .arg("-ex").arg("set variable looping = 0")
-            .arg("-ex").arg("finish")
-            .exec()
-            .to_string())
+    let pid = params
+            .next()
+            .ok_or("Failed to get the PID of the program to be debugged."
+                   .to_string())?;
+
+    let mut debugger = "rust-gdb";
+    if fmt_version_no > 1 {
+        debugger = params
+            .next()
+            .ok_or("Failed to get the name of the debugger to use."
+                   .to_string())?;
+    }
+
+    if debugger == "rust-gdb" {
+        // Hopefully, this won't return, but if it does we want to display
+        // the error.
+        Err(process::Command::new(debugger)
+                .arg("-pid").arg(&pid)
+                .arg("-ex").arg("set variable looping = 0")
+                .arg("-ex").arg("finish")
+                .exec()
+                .to_string())
+    } else if debugger == "rust-lldb" {
+        Err(process::Command::new(debugger)
+                .arg("-p").arg(&pid)
+                .arg("-o").arg("expression looping = 0")
+                .arg("-o").arg("finish")
+                .exec()
+                .to_string())
+    } else {
+        Err(format!("Unknown debugger: {}", debugger))
+    }
 }

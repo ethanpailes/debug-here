@@ -4,6 +4,13 @@ mod another_module;
 
 fn factorial(n: usize) -> usize {
     let mut res = 1;
+    // Try changing the debugger backend by replacing this with
+    //
+    // debug_here!(lldb);
+    //
+    // or
+    //
+    // debug_here!(gdb);
     debug_here!();
     for i in 0..n {
         res *= i;
