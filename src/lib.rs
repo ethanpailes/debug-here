@@ -101,6 +101,26 @@ pub fn debug_here_impl(debugger: Option<&str>) {
     while looping {}
 }
 
+fn debugger_args(debugger: &str) -> Vec<String> {
+    if debugger == "rust-lldb" {
+        vec!["-p".to_string(),
+             unistd::getpid().to_string(),
+             "-o".to_string(),
+             "expression looping = 0".to_string(),
+             "-o".to_string(),
+             "finish".to_string()]
+    } else if debugger == "rust-gdb" {
+        vec!["-pid".to_string(),
+             unistd::getpid().to_string(),
+             "-ex".to_string(),
+             "set variable looping = 0".to_string(),
+             "-ex".to_string(),
+             "finish".to_string()]
+    } else {
+        panic!("unknown debugger: {}", debugger);
+    }
+}
+
 /// Perform sanity checks specific to a linux environment
 ///
 /// Returns true on success, false if we should terminate early
@@ -170,24 +190,17 @@ fn linux_launch_term(debugger: &str) -> Result<(), String> {
        .stderr(process::Stdio::null());
     if term.ends_with("alacritty") {
         cmd.arg("-e");
+        cmd.arg(debugger);
+        cmd.args(debugger_args(debugger));
+    } else {
+        cmd.arg("debug-here-gdb-wrapper");
     }
-    cmd.arg("debug-here-gdb-wrapper");
 
     match cmd.spawn() {
         Ok(_) => Ok(()),
         Err(e) => Err(
             format!("failed to launch rust-gdb in {:?}: {}", term, e))
     }
-}
-
-#[cfg(target_os = "macos")]
-fn lldb_args() -> String {
-    format!("-p {} -o 'expression looping = 0' -o finish", unistd::getpid())
-}
-
-#[cfg(target_os = "macos")]
-fn gdb_args() -> String {
-    format!("-pid {} -ex 'set variable looping = 0' -ex finish", unistd::getpid())
 }
 
 /// sanity check the environment in a macos environment
@@ -206,11 +219,10 @@ fn macos_launch_term(debugger: &str) -> Result<(), String> {
     let launch_script =
         format!(r#"tell app "Terminal"
                do script "exec {} {}"
-           end tell"#, debugger, match debugger {
-               "rust-gdb" => gdb_args(),
-               "rust-lldb" => lldb_args(),
-               _ => unreachable!(),
-           });
+           end tell"#, debugger,
+           debugger_args(debugger).into_iter()
+               .map(|a| if a.contains(" ") { format!("'{}'", a) } else { a } )
+               .collect::<Vec<_>>().join(" "));
 
     let mut cmd = process::Command::new("osascript");
     cmd.arg("-e")
