@@ -1,4 +1,4 @@
-# debug-here: a rust-gdb hook, inspired by pdb.set_trace()
+# debug-here: a rust debugger hook for linux and macos
 
 ### The Problem
 
