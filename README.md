@@ -43,7 +43,7 @@ arrange for your debugger backend to execute all the right commands.
 cargo install debug-here-gdb-wrapper
 ```
 
-# General Setup
+### General Setup
 
 Now you can add debug-here to the dependencies of a crate you want to
 work on.
