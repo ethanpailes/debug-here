@@ -29,7 +29,7 @@ wait around for a debugger to attach to it. Entering the debugger should
 be just as easy as writing a `println!` statement. This crate makes it
 so.
 
-## Usage
+## Setup
 
 ### Linux Specific Setup
 
@@ -50,43 +50,67 @@ the debug-here-gdb-wrapper. If you have alacritty on your path, `debug-here`
 will automatically chose to use it over xterm, so there is no special
 setup required after you've installed it.
 
+### Windows Specific Setup
+
+`debug-here` uses windows Just-In-Time Debugging to allow you to use visual
+studio to debug your code, so you have to have a working visual studio
+installation.
+
 ### General Setup
 
-Now you can add debug-here to the dependencies of a crate you want to
-work on.
+Just add debug-here to the dependencies of a crate you want to work on.
 
 ```
-debug-here = "0.1"
+debug-here = "0.2"
 ```
+
+## Usage
 
 Drop the usual `#[macro_use] extern crate debug_here;` somewhere in your
 `lib.rs` or `main.rs`, then just write `debug_here!()`
 wherever you want to get dropped into the debugger. When your
 program reaches that point for the first time, it will launch
-a terminal window with `rust-gdb` or `rust-lldb` attached to your process
-right after the `debug_here!()` macro. The exact debugger used by default
-depends on your platform, but you can write `debug_here!(gdb)` or
-`debug_here!(lldb)` to force a particular backend. You can poke around
+a debugger appropriate for your platform attached to your process
+right after the `debug_here!()` macro. You can poke around
 and start stepping through your program. If you reach another
 `debug_here!()` macro invocation, you don't have to worry about
 more debugger terminals spawning left and right. `debug_here!()` only
 fires once per program.
 
-## Supported Terminal Emulators
+### Windows Usage Notes
 
-Currently debug-here supports `alacritty` and `xterm` on linux, and
-`Terminal.app` on macos. If you have alacritty on your path, it will use that,
+Visual Studio will drop you into the debugger right at the end of the
+`debug_break_wrapper` function. You can just mash F10 a few times to
+get back to your code where the `debug_here!()` macro was invoked.
+
+Visual Studio is the only debugger supported on windows.
+
+### Unixy Usage Notes
+
+On linux and macos you can choose to use either `rust-gdb` or `rust-lldb`
+as debugger backends. If you plan to leave `debug_here!()` macros
+in your code, you should avoid forcing a particular backend because not
+all backends work well on all platforms. Windows will not work with
+`gdb` or `lldb` for example.
+
+#### Supported Terminal Emulators
+
+Currently `debug-here` supports `alacritty` and `xterm` on linux, and
+`Terminal.app` on macos. If you have `alacritty` on your path, it will use that,
 on the theory that you would rather use a less standard terminal emulator
 if you went to all the trouble of installing it. If you don't have
 `alacritty` on your path, it will fall back on `xterm`.
 
 ## Platforms
 
-Right now `debug-here` only works on linux and macos. There may be support
-for Windows in the future. `debug-here` defaults to using `rust-gdb` on linux
-and `rust-lldb` on macos. The primary reason for defaulting to `rust-lldb`
+Right now `debug-here` only works on linux, macos and windows.
+`debug-here` defaults to using `rust-gdb` on linux, `rust-lldb` on macos,
+and Visual Studio on windows. The primary reason for defaulting to `rust-lldb`
 on macos is to avoid the pain of getting a properly code-signed gdb.
-debug-here aims to make getting into the debugger as painless as possible.
+
+`debug-here` probably won't grow support for any more platforms, though it's
+possible that windows will grow support for gdb and lldb. I'm happy to take
+patches for more exotic platforms, though testing may be an issue.
 
 ## An Example: Bad Factorials
 
@@ -211,6 +235,5 @@ commands:
  > cargo run
 ```
 
-You should see a terminal pop up with a rust-gdb shell ready to go. There
-is another bug in the factorial routine. Try debugging it with
-rust-gdb.
+You should see a terminal pop up with a debugger shell ready to go. There
+is another bug in the factorial routine. Try finding it.

@@ -19,5 +19,7 @@ members = [
 
 [dependencies]
 lazy_static = "1.1.0"
-nix = "0.11.0"
 which = "2.0"
+
+[target.'cfg(windows)'.dependencies]
+winapi = { version = "0.3", features = ["debugapi"] }
