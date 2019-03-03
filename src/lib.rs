@@ -13,7 +13,10 @@ compile_error!("debug-here: this crate currently only builds on linux and macos"
 
 /// The debug here macro. Just invoke this macro somewhere in your
 /// source, and when your program reaches it a terminal running
-/// `rust-gdb` will launch.
+/// `rust-gdb` or `rust-lldb` will launch.
+///
+/// If you want to force a specific debugger backend, you can write
+/// `debug_here!(gdb)` or `debug_here!(lldb)`.
 #[macro_export]
 macro_rules! debug_here {
     () => {
@@ -31,7 +34,7 @@ macro_rules! debug_here {
 ///
 /// If we have never launched a debugger before, we do so. Otherwise,
 /// we just don't do anything on the theory that if you are debugging
-/// something in a loop, you probably don't want a new `rust-gdb`
+/// something in a loop, you probably don't want a new debugger
 /// every time you step through your `debug_here!()`.
 ///
 /// Before spawning the debugger we examine the execution environment
@@ -101,6 +104,8 @@ pub fn debug_here_impl(debugger: Option<&str>) {
     while looping {}
 }
 
+/// The args required to launch the given debugger and attach to the
+/// current debugger.
 fn debugger_args(debugger: &str) -> Vec<String> {
     if debugger == "rust-lldb" {
         vec!["-p".to_string(),
