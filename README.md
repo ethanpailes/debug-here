@@ -33,7 +33,8 @@ so.
 
 ### Linux Specific Setup
 
-If you are using linux, you need to install the debugger wrapper
+If you are using linux and you want to use `xterm` for your terminal
+emulator, you need to install the debugger wrapper
 (which is called `debug-here-gdb-wrapper` for historical reasons).
 Not all terminal emulators allow you to pass extra arguments to the
 program you invoke as your shell, so `debug-here-gdb-wrapper` will
@@ -42,6 +43,12 @@ arrange for your debugger backend to execute all the right commands.
 ```
 cargo install debug-here-gdb-wrapper
 ```
+
+Alternatively, you could use [alacritty](https://github.com/jwilm/alacritty)
+as your terminal emulator, in which case you don't need to bother with
+the debug-here-gdb-wrapper. If you have alacritty on your path, `debug-here`
+will automatically chose to use it over xterm, so there is no special
+setup required after you've installed it.
 
 ### General Setup
 
