@@ -1,3 +1,26 @@
+// Copyright 2018-2019 Ethan Pailes. See the COPYRIGHT
+// file at the top-level directory of this distribution.
+//
+// Licensed under the Apache License, Version 2.0 <LICENSE-APACHE or
+// http://www.apache.org/licenses/LICENSE-2.0> or the MIT license
+// <LICENSE-MIT or http://opensource.org/licenses/MIT>, at your
+// option. This file may not be copied, modified, or distributed
+// except according to those terms.
+
+/*!
+This crate provides a macro for launching the debugger most appropriate for
+your platform in a new terminal. The first time a program executes the
+`debug_here!()` macro, it launches a new terminal and automatically
+attaches either rust-gdb or rust-lldb to your program at the location
+of the macro.
+
+[The README](https://github.com/ethanpailes/debug-here/blob/master/README.md)
+contains more details and examples.
+
+The [debug-me](https://github.com/ethanpailes/debug-here/tree/master/debug-me)
+program provides a concrete usage example.
+*/
+
 #[macro_use] extern crate lazy_static;
 extern crate nix;
 extern crate which;
