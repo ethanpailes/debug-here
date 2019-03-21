@@ -1,4 +1,4 @@
-# debug-here: a rust debugger hook for linux and macos
+# debug-here: a cross platform rust debugger hook
 
 ### The Problem
 

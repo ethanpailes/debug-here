@@ -1,3 +1,7 @@
+# 0.2.2
+
+- Fix README.md slogan to reflect new windows support
+
 # 0.2.1
 
 - Add support for windows, using the just-in-time debugging mechanism
