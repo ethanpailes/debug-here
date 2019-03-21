@@ -1,3 +1,9 @@
+# 0.2.1
+
+- Add support for windows, using the just-in-time debugging mechanism
+- Update documentation to reflect windows support
+- Drop `nix` as a dependency
+
 # 0.2.0
 
 - Add support for macos
@@ -14,3 +20,4 @@
 # 0.1.1
 
 The Initial Release
+- Only supported linux and rust-gdb
