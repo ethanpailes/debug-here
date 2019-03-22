@@ -54,8 +54,7 @@ macro_rules! debug_here {
 #[macro_export]
 macro_rules! debug_here {
     () => {
-        ::debug_here::internal::debug_here_win_setup();
-        ::debug_here::internal::debug_break_wrapper();
+        ::debug_here::internal::debug_here_win_impl();
     };
     ( gdb ) => {
         compile_error!("debug-here: gdb is not supported on windows");

@@ -124,7 +124,7 @@ pub fn debug_here_unixy_impl(debugger: Option<&str>) {
 ///
 /// Don't use this directly.
 #[cfg(target_os = "windows")]
-pub fn debug_here_win_setup() {
+pub fn debug_here_win_impl() {
     if already_entered() {
         return;
     }
@@ -154,16 +154,11 @@ pub fn debug_here_win_setup() {
     while unsafe { debugapi::IsDebuggerPresent() } == 0 {
         thread::sleep(Duration::from_millis(100));
     }
-}
 
-/// A wrapper around the `DebugBreak` windows api function so that
-/// windows users don't need to import winapi stuff themselves.
-///
-/// Don't use this directly.
-#[cfg(target_os = "windows")]
-pub fn debug_break_wrapper() {
+    // Just mash F10 until you see your own code
     unsafe { debugapi::DebugBreak(); }
 }
+
 
 /// The args required to launch the given debugger and attach to the
 /// current debugger.
