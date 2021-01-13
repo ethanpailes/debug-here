@@ -29,7 +29,7 @@ use std::{path, thread};
 #[cfg(target_os = "windows")]
 use std::time::Duration;
 
-#[cfg(not(any(target_os = "linux", target_os = "macos", target_os = "windows")))]
+#[cfg(not(any(target_os = "linux", target_os = "macos", mac_catalyst, target_os = "windows")))]
 compile_error!("debug-here: this crate currently only builds on linux, macos, and windows");
 
 fn already_entered() -> bool {
@@ -65,7 +65,7 @@ pub fn debug_here_unixy_impl(debugger: Option<&str>) {
 
     #[cfg(target_os = "linux")]
     let sane_env = linux_check();
-    #[cfg(target_os = "macos")]
+    #[cfg(any(target_os = "macos", mac_catalyst))]
     let sane_env = macos_check();
 
     if let Err(e) = sane_env {
@@ -75,7 +75,7 @@ pub fn debug_here_unixy_impl(debugger: Option<&str>) {
 
     #[cfg(target_os = "linux")]
     let debugger = debugger.unwrap_or("rust-gdb");
-    #[cfg(target_os = "macos")]
+    #[cfg(any(target_os = "macos", mac_catalyst))]
     let debugger = debugger.unwrap_or("rust-lldb");
 
     if which::which(debugger).is_err() {
@@ -98,7 +98,7 @@ pub fn debug_here_unixy_impl(debugger: Option<&str>) {
 
     #[cfg(target_os = "linux")]
     let launch_stat = linux_launch_term(debugger);
-    #[cfg(target_os = "macos")]
+    #[cfg(any(target_os = "macos", mac_catalyst))]
     let launch_stat = macos_launch_term(debugger);
 
     if let Err(e) = launch_stat {
@@ -268,7 +268,7 @@ fn linux_launch_term(debugger: &str) -> Result<(), String> {
 }
 
 /// sanity check the environment in a macos environment
-#[cfg(target_os = "macos")]
+#[cfg(any(target_os = "macos", mac_catalyst))]
 fn macos_check() -> Result<(), String> {
     if which::which("osascript").is_err() {
         return Err(format!("debug-here: can't find osascript. Bailing."));
@@ -278,7 +278,7 @@ fn macos_check() -> Result<(), String> {
 }
 
 /// Launch a terminal in a macos environment
-#[cfg(target_os = "macos")]
+#[cfg(any(target_os = "macos", mac_catalyst))]
 fn macos_launch_term(debugger: &str) -> Result<(), String> {
     let launch_script =
         format!(r#"tell app "Terminal"
