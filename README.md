@@ -39,6 +39,9 @@ emulator, you need to install the debugger wrapper
 Not all terminal emulators allow you to pass extra arguments to the
 program you invoke as your shell, so `debug-here-gdb-wrapper` will
 arrange for your debugger backend to execute all the right commands.
+Note that you never need to call `debug-here-gdb-wrapper` directly,
+it just needs to be somewhere on your path, so that the `debug_here!()`
+macro can call it.
 
 ```
 cargo install debug-here-gdb-wrapper
